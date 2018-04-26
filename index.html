@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, width=device-width">
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700&amp;subset=cyrillic" rel="stylesheet">
+  <title>tplk</title>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      padding: 0;
+      width: 100%;
+    }
+
+    html {
+      font-size: 1.5rem;
+    }
+
+    body {
+      color: #fff;
+      font-family: 'Roboto Mono', monospace;
+      background-color: #212121;
+    }
+
+    a {
+      color: #fff;
+    }
+
+    .container {
+      display: inline-block;
+      position: absolute;
+      transform-origin: center;
+    }
+
+    .repo {
+      animation: a-opacity 5000ms linear forwards, a-slide-right 5000ms linear forwards;
+      position: absolute;
+      opacity: 0.5;
+      will-change: transform;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .repo--inverted {
+      animation: a-opacity 5000ms linear forwards, a-slide-right 5000ms linear reverse;
+    }
+
+    .name {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: underline;
+    }
+
+    .repo:hover > .name,
+    .info__list-item > a:hover {
+      opacity: 0.8;
+    }
+
+    .desc {
+      opacity: 0.7;
+      max-width: 700px;
+      word-wrap: break-word;
+    }
+
+    @keyframes a-opacity {
+      0% {
+        opacity: 0;
+      }
+      25% {
+        opacity: 1;
+      }
+      75% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    @keyframes a-slide-right {
+      100% {
+        transform: translateX(20%);
+      }
+    }
+
+    /*@keyframes a-slide-left {*/
+    /*100% {*/
+    /*transform: translateX(-20%);*/
+    /*}*/
+    /*}*/
+
+    .info__list {
+      display: none;
+      list-style: square;
+    }
+
+    .info__list--visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<script>
+  // Animation based on https://github.com/arkon/hmmmm
+
+  const SPAWN_INTERVAL = 1500;
+  const MAX_DESCRIPTION_LENGTH = 141;
+
+  const info = {
+    name: 'Dmitry Teplov',
+    github: {
+      url: 'https://github.com/tplk',
+      value: 'tplk',
+    },
+    telegram: {
+      url: 'https://t.me/itplk',
+      value: '@itplk',
+    },
+    email: {
+      url: 'mailto:hr@itplk.ru',
+      value: 'hr@itplk.ru',
+    },
+  };
+
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  function fetchRepos() {
+    return new Promise((resolve, reject) => {
+      fetch('https://api.github.com/users/tplk/repos?affiliation=owner&visibility=public')
+        .then(res => res.json())
+        .then(repos => repos
+          .filter(repo => {
+            return repo.name !== 'itplk.ru' && repo.fork === false;
+          })
+          .map(repo => ({
+            name: repo.name,
+            url: repo.html_url,
+            description: repo.description && repo.description.length > MAX_DESCRIPTION_LENGTH
+              ? `${repo.description.slice(0, MAX_DESCRIPTION_LENGTH)}...`
+              : repo.description,
+          })))
+        .then(repos => resolve(repos))
+        .catch(err => reject(err));
+    });
+  }
+
+  function calcMaxPos(pos) {
+    if (pos <= 500) {
+      return pos;
+    } else {
+      return pos - 200;
+    }
+  }
+
+  function randomBetween(x, y) {
+    return Math.floor(Math.random() * y) + x;
+  }
+
+  function randomX() {
+    return randomBetween(-200, calcMaxPos(window.innerWidth)) + 'px';
+  }
+
+  function randomY() {
+    return randomBetween(-200, calcMaxPos(window.innerHeight)) + 'px';
+  }
+
+  function randomAngle() {
+    return randomBetween(-60, 60) + 'deg';
+  }
+
+  function randomContainerPlacement(el) {
+    el.style.transform =
+      'translate(' + randomX() + ',' + randomY() + ') '
+      + 'rotate(' + randomAngle() + ') ';
+  }
+
+  function createRepoEl(repo) {
+    const elRepo = document.createElement('a');
+    elRepo.className = 'repo';
+    if (randomBetween(0, 2) === 1) {
+      elRepo.className += ' repo--inverted';
+    }
+    elRepo.href = repo.url;
+    elRepo.target = '_blank';
+    const elName = document.createElement('span');
+    elName.className = 'name';
+    elName.innerText = repo.name;
+    elRepo.appendChild(elName);
+    const elDesc = document.createElement('span');
+    elDesc.className = 'desc';
+    elDesc.innerText = repo.description;
+    elRepo.appendChild(elDesc);
+    return elRepo;
+  }
+
+  function renderRepo(repo) {
+    const elContainer = document.createElement('div');
+    elContainer.className = 'repo-container';
+    elContainer.appendChild(createRepoEl(repo));
+    document.body.appendChild(elContainer);
+    randomContainerPlacement(elContainer);
+
+    setTimeout(function() {
+      document.body.removeChild(elContainer);
+    }, 5500);
+  }
+
+  function createCurRepos(repos) {
+    const curRepos = [...repos];
+    shuffleArray(curRepos);
+    return curRepos;
+  }
+
+  function initRepos(repos) {
+    let curRepos = createCurRepos(repos);
+
+    setInterval(
+      () => {
+        renderRepo(curRepos.pop());
+        if (curRepos.length <= 0) {
+          curRepos = createCurRepos(repos);
+        }
+      },
+      SPAWN_INTERVAL,
+    );
+  }
+
+  function initReposFallback() {
+    fetch('fallback_repos.json')
+      .then(res => res.json())
+      .then(repos => initRepos(repos));
+  }
+
+  function createListItemEl(key, item) {
+    const elItem = document.createElement('li');
+    elItem.className = 'info__list-item';
+    if (item.url != null) {
+      elItem.innerText = `${key}: `;
+      const elLink = document.createElement('a');
+      elLink.href = item.url;
+      elLink.target = '_blank';
+      elLink.innerText = `${item.value}`;
+      elItem.appendChild(elLink);
+    } else {
+      elItem.innerText = `${key}: ${item}`;
+    }
+
+    return elItem;
+  }
+
+  function renderInfo() {
+    const elList = document.getElementById('list');
+    Object.keys(info)
+      .forEach(key => elList.appendChild(createListItemEl(key, info[key])));
+    elList.className += ' info__list--visible';
+  }
+
+
+  function onLoaded() {
+    document.removeEventListener('DOMContentLoaded', onLoaded);
+    renderInfo();
+    fetchRepos()
+      .then(repos => initRepos(repos))
+      .catch(err => {
+        console.error(err);
+        initReposFallback();
+      });
+  }
+
+  document.addEventListener('DOMContentLoaded', onLoaded);
+
+</script>
+<div class="info">
+  <ul id="list" class="info__list"></ul>
+</div>
+</body>
+</html>
