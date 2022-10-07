@@ -105,6 +105,25 @@
       padding: 1rem;
     }
 
+    table {
+      border-spacing: 0;
+    }
+
+    td {
+      text-align: center;
+    }
+
+    td:first-child {
+      text-align: right;
+      padding-right: 0.5rem;
+    }
+
+    td:last-child {
+      text-align: left;
+      padding-left: 0.5rem;
+      border-left: 0.1rem solid;
+    }
+
     a {
       color: var(--linkColor);
       transition: transform 100ms;
@@ -122,12 +141,6 @@
       text-decoration: double underline;
     }
 
-    ul {
-      list-style: square;
-      margin: 0;
-      padding-left: 1em;
-    }
-
     .email {
       display: none;
     }
@@ -136,11 +149,20 @@
 
 <body>
   <main>
-    <ul>
-      <li>name: Dmitriy Teplov</li>
-      <li>github: <a href="https://github.com/tplk">tplk</a></li>
-      <li>еmаil: h<i class="email">me@asdf.com</i>i&#064;itp<span class="email">lol</span>lk&#046;ru</li>
-    </ul>
+    <table>
+      <tr>
+        <td>name</td>
+        <td>Dmitriy Teplov</td>
+      </tr>
+      <tr>
+        <td>еmаil</td>
+        <td>h<i class="email">me@asdf.com</i>i&#064;itp<span class="email">lol</span>lk&#046;ru</td>
+      </tr>
+      <tr>
+        <td>github</td>
+        <td><a href="https://github.com/tplk">tplk</a></td>
+      </tr>
+    </table>
   </main>
 </body>
 </html>
