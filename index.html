@@ -9,10 +9,20 @@
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <title>tplk</title>
   <script>
+    const themeDict = {
+      dark: {
+        '--colorText': '#bdbdbd',
+        '--colorPrimary': '#212121',
+      },
+      lime: {
+        '--colorText': '#000000',
+        '--colorPrimary': '#00ff00',
+      },
+    }
+
     const themes = [
       null,
-      'lime',
-      'dark',
+      ...Object.keys(themeDict),
     ];
 
     const getRandomTheme = () => themes[Math.floor(themes.length * Math.random())];
@@ -43,7 +53,9 @@
     currentTheme.value = randomTheme;
 
     if (currentTheme.value != null) {
-      document.documentElement.dataset.theme = currentTheme.value;
+      for (const [key, value] of Object.entries(themeDict[currentTheme.value])) {
+        document.documentElement.style.setProperty(key, value);
+      }
     }
   </script>
   <style>
@@ -55,16 +67,6 @@
       --colorPrimary: #d500f9;
       --colorText: #000000;
       --colorLink: var(--colorText);
-    }
-
-    :root[data-theme="lime"] {
-      --colorText: #000;
-      --colorPrimary: #00ff00;
-    }
-
-    :root[data-theme="dark"] {
-      --colorText: #bdbdbd;
-      --colorPrimary: #212121;
     }
 
     :root[data-mode="no-glasses"] {
