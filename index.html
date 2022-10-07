@@ -8,6 +8,44 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,400;1,700&display=swap">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <title>tplk</title>
+  <script>
+    const themes = [
+      null,
+      'lime',
+      'dark',
+    ];
+
+    const getRandomTheme = () => themes[Math.floor(themes.length * Math.random())];
+
+    const currentTheme = (() => {
+      const key = 'currentTheme';
+      let value = null;
+
+      try {
+        value = JSON.parse(window.localStorage.getItem(key)) ?? null;
+      } catch (e) {}
+
+      return {
+        get value() {
+          return value;
+        },
+        set value(newValue) {
+          value = newValue;
+          try {
+            window.localStorage.setItem(key, JSON.stringify(value));
+          } catch (e) {}
+        },
+      }
+    })();
+
+    let randomTheme = getRandomTheme();
+    while(randomTheme === currentTheme.value) randomTheme = getRandomTheme();
+    currentTheme.value = randomTheme;
+
+    if (currentTheme.value != null) {
+      document.documentElement.dataset.theme = currentTheme.value;
+    }
+  </script>
   <style>
     * {
       box-sizing: border-box;
