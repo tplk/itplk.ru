@@ -12,19 +12,19 @@
     const themeDict = {
       dark: {
         '--colorText': '#bdbdbd',
-        '--colorPrimary': '#212121',
+        '--colorBackground': '#212121',
       },
       lime: {
         '--colorText': '#000000',
-        '--colorPrimary': '#00ff00',
+        '--colorBackground': '#00ff00',
       },
       pink: {
         '--colorText': '#000000',
-        '--colorPrimary': '#d500f9',
+        '--colorBackground': '#d500f9',
       },
       eva: {
         '--colorText': '#4ae44b',
-        '--colorPrimary': '#765898',
+        '--colorBackground': '#765898',
       },
     }
 
@@ -72,7 +72,7 @@
     }
 
     :root {
-      --colorPrimary: #ffffff;
+      --colorBackground: #ffffff;
       --colorText: #000000;
       --colorLink: var(--colorText);
     }
@@ -83,7 +83,7 @@
 
     :root {
       color: var(--colorText);
-      background-color: var(--colorPrimary);
+      background-color: var(--colorBackground);
       font-size: 2rem;
       font-family: 'Roboto Mono', monospace;
       line-height: 150%;
